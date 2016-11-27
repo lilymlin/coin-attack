@@ -11,6 +11,7 @@ enemy1 = gamebox.from_color(320, 459, "green", 20, 20)
 enemy1.yspeed = 0
 enemy2 = gamebox.from_color(380, 459, "green", 20, 20)
 enemy2.yspeed = 0
+bonuses = [gamebox.from_color(300, 450, "purple", 12, 12)]
 ground = gamebox.from_color(-100, 600, "cyan", 3000, 50)
 ceiling = gamebox.from_color(-100, -10, "cyan", 3000, 50)
 left_wall = gamebox.from_color(0, 300, "cyan", 15, 1000)
@@ -41,7 +42,7 @@ def tick(keys):
         character1.y += 3
 
     if pygame.K_d in keys:
-        character2.x += 3
+        character2.x += 3 
     if pygame.K_a in keys:
         character2.x -= 3
     if pygame.K_w in keys:
@@ -63,6 +64,7 @@ def tick(keys):
         enemy1.y -= 1
     if enemy1.touches(character1):
         lives -= 1
+        score -= 1
         character1.x = random.randint(20, 600)
         character1.y = random.randint(20, 400)
         camera.draw(character1)
@@ -77,6 +79,7 @@ def tick(keys):
         enemy2.y -= 1
     if enemy2.touches(character2):
         lives2 -= 1
+        score2 -= 1
         character2.x = random.randint(20, 600)
         character2.y = random.randint(20, 400)
         camera.draw(character2)
@@ -109,6 +112,15 @@ def tick(keys):
             score2 += 1
             coins.remove(coin)
         camera.draw(coin)
+#if character collects a bonus then they get 10 coins
+    for bonus in bonuses:
+        if character1.touches(bonus):
+            score += 10
+            bonuses.remove(bonus)
+        if character2.touches(bonus):
+            score2 += 10
+            coins.remove(bonus)
+        camera.draw(bonus)
 
 #When lives = 0 then display a message saying that the other player wins
     if lives == 0:
@@ -120,11 +132,16 @@ def tick(keys):
         camera.draw(player2_wins)
         gamebox.pause()
 
-#time 
-    if time % 100 == 0:
+#spawn coins 
+    if time % 50 == 0:
         coin_x = random.randint(50, 750)
         coin_y = random.randint(100, 700)
         coins.append(gamebox.from_color(coin_x, coin_y, "yellow", 12, 12))
+#spawn bonuses
+    if time % 150 == 0:
+        bonus_x = random.randint(50, 750)
+        bonus_y = random.randint(100, 700)
+        bonuses.append(gamebox.from_color(bonus_x, bonus_y, "purple", 12, 12))
 
 #display score and which player wins after game ends       
     if int(seconds) <= 0:
